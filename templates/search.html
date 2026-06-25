@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Search Logs - Secrust</title>
+
+
+<link rel="stylesheet" href="/static/css/style.css">
+
+
+</head>
+<body>
+
+<div class="layout">
+
+
+<!-- Sidebar -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        🛡 Secrust
+    </div>
+
+    <div class="sidebar-menu">
+
+        <a href="/dashboard">
+            📊 Dashboard
+        </a>
+
+        <a href="/websites">
+            🌐 Websites
+        </a>
+
+        <a href="/logs">
+            📜 Live Logs
+        </a>
+
+        <a href="/alerts">
+            🚨 Alerts
+        </a>
+
+        <a href="/search">
+            🔍 Search Logs
+        </a>
+
+        <a href="/settings">
+            ⚙️ Settings
+        </a>
+
+    </div>
+
+    <a href="/logout" class="logout-btn">
+        🚪 Logout
+    </a>
+
+</aside>
+
+<!-- Main Content -->
+
+<main class="content">
+
+    <!-- Navbar -->
+
+    <nav class="navbar">
+
+        <div class="navbar-title">
+            🔍 Log Search
+        </div>
+
+        <div class="navbar-right">
+
+            <input
+                type="text"
+                class="search-global"
+                placeholder="Search logs...">
+
+        </div>
+
+    </nav>
+
+    <!-- Search Card -->
+
+    <div class="card">
+
+        <h1>🔍 Search Logs</h1>
+
+        <p>
+            Search through traffic, attacks, requests and security events.
+        </p>
+
+        <br>
+
+        <form action="/search">
+
+            <input
+                type="text"
+                name="q"
+                placeholder="status:404 | ip:192.168 | path:/admin"
+                required>
+
+            <br><br>
+
+            <button
+                type="submit"
+                class="btn-primary">
+
+                Search Logs
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <br>
+
+    <!-- Query Examples -->
+
+    <div class="card">
+
+        <h2>📖 Search Examples</h2>
+
+        <br>
+
+        <p><code>status:404</code> → Find 404 errors</p>
+
+        <p><code>status:500</code> → Find server errors</p>
+
+        <p><code>ip:192.168.1.1</code> → Search by IP</p>
+
+        <p><code>path:/admin</code> → Search admin requests</p>
+
+    </div>
+
+    <br>
+
+    <!-- Results -->
+
+    <div class="card">
+
+        <h2>📋 Search Results</h2>
+
+        <br>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>IP</th>
+                    <th>Method</th>
+                    <th>Path</th>
+                    <th>Status</th>
+                </tr>
+
+                {{range .logs}}
+
+                <tr>
+
+                    <td>{{.ID}}</td>
+
+                    <td>
+                        <code>{{.IP}}</code>
+                    </td>
+
+                    <td>{{.Method}}</td>
+
+                    <td>{{.Path}}</td>
+
+                    <td>
+
+                        {{if eq .Status 200}}
+
+                        <span class="badge success">
+                            200
+                        </span>
+
+                        {{else if eq .Status 404}}
+
+                        <span class="badge warning">
+                            404
+                        </span>
+
+                        {{else if ge .Status 500}}
+
+                        <span class="badge danger">
+                            {{.Status}}
+                        </span>
+
+                        {{else}}
+
+                        <span class="badge">
+                            {{.Status}}
+                        </span>
+
+                        {{end}}
+
+                    </td>
+
+                </tr>
+
+                {{else}}
+
+                <tr>
+
+                    <td colspan="5">
+
+                        No matching logs found
+
+                    </td>
+
+                </tr>
+
+                {{end}}
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+</div>
+
+</body>
+</html>

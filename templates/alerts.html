@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>{{.domain}} - Security Alerts</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+
+<!-- Sidebar -->
+<aside class="sidebar">
+
+    <div class="logo">
+        🛡 Secrust
+    </div>
+
+    <div class="sidebar-menu">
+
+        <a href="/website/{{.hash}}/dashboard">
+             Dashboard
+        </a>
+
+        <a href="/website/{{.hash}}/logs">
+             Live Logs
+        </a>
+
+        <a href="/website/{{.hash}}/alerts">
+             Alerts
+        </a>
+
+        <a href="/website/{{.hash}}/logs/search">
+             Search Logs
+        </a>
+
+        <a href="/website/{{.hash}}/integration">
+             Integration
+        </a>
+
+        <a href="/websites">
+             Websites
+        </a>
+
+    </div>
+
+    <a href="/logout" class="logout-btn">
+         Logout
+    </a>
+
+</aside>
+
+<!-- Main Content -->
+<main class="content">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <div class="navbar-title">
+             Security Alerts
+        </div>
+
+        <div class="navbar-right">
+
+            <!-- <input
+                type="text"
+                class="search-global"
+                placeholder="Search alerts..."> -->
+
+        </div>
+
+    </nav>
+
+    <!-- Page Header -->
+    <div class="card">
+
+        <h1> {{.domain}}</h1>
+
+        <p>
+            Security alerts and detected threats for this website.
+        </p>
+
+    </div>
+
+    <br>
+
+    <!-- Quick Actions -->
+
+    <div class="actions">
+
+        <a href="/website/{{.hash}}/dashboard">
+            <button> Dashboard</button>
+        </a>
+
+        <a href="/website/{{.hash}}/logs">
+            <button> Logs</button>
+        </a>
+
+        <a href="/website/{{.hash}}/export/logs">
+            <button> Export CSV</button>
+        </a>
+
+        <a href="/websites">
+            <button> All Websites</button>
+        </a>
+
+    </div>
+
+    <!-- Alerts Table -->
+
+    <div class="card">
+
+        <h2>Detected Security Events</h2>
+
+        <br>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Severity</th>
+                    <th>Message</th>
+                    <th>IP Address</th>
+                    <th>Created</th>
+                </tr>
+
+                {{range .alerts}}
+
+                <tr>
+
+                    <td>{{.ID}}</td>
+
+                    <td>
+
+                        {{if eq .Severity "Critical"}}
+                            <span class="badge danger">
+                                 Critical
+                            </span>
+
+                        {{else if eq .Severity "High"}}
+                            <span class="badge danger">
+                                High
+                            </span>
+
+                        {{else if eq .Severity "Medium"}}
+                            <span class="badge warning">
+                                Medium
+                            </span>
+
+                        {{else}}
+                            <span class="badge success">
+                                Low
+                            </span>
+                        {{end}}
+
+                    </td>
+
+                    <td>{{.Message}}</td>
+
+                    <td>
+                        <code>{{.IP}}</code>
+                    </td>
+
+                    <td>{{.CreatedAt}}</td>
+
+                </tr>
+
+                {{else}}
+
+                <tr>
+
+                    <td colspan="5">
+                        No Security Alerts Found
+                    </td>
+
+                </tr>
+
+                {{end}}
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+</div>
+
+</body>
+</html>

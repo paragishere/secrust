@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secrust | Real-Time Website Security Monitoring</title>
+    <meta name="description" content="Monitor SQL Injection, XSS, brute force attacks, scanners and suspicious activity in real time with Secrust.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================
+           VARIABLES & RESET
+           ========================= */
+        :root {
+            --bg: #fff8f4;
+            --surface: #ffffff;
+            --primary: #ff8f6b;
+            --primary-hover: #ff7b52;
+            --primary-light: #ffefe9;
+            --accent: #ffe4d6;
+            --text: #2d3748;
+            --text-muted: #718096;
+            --border: #f1d5c7;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 20px;
+            --shadow: 0 8px 30px rgba(0,0,0,0.04);
+            --shadow-hover: 0 15px 35px rgba(255, 143, 107, 0.15);
+            --max-width: 1200px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================
+           TYPOGRAPHY
+           ========================= */
+        h1, h2, h3 {
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: -0.03em; }
+        h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -0.02em; margin-bottom: 1rem; }
+        h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        
+        p { color: var(--text-muted); font-size: 1.1rem; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), #ff5e62);
+            background-clip: text; /* standard property for compatibility */
+            -webkit-background-clip: text;
+            color: transparent; /* fallback for browsers that don't support -webkit-text-fill-color */
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* =========================
+           BUTTONS
+           ========================= */
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button, .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+
+        button:hover, .btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(255, 143, 107, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            color: white;
+            box-shadow: 0 6px 20px rgba(255, 143, 107, 0.4);
+        }
+
+        /* =========================
+           LAYOUT & CONTAINER
+           ========================= */
+        .container {
+            width: min(var(--max-width), 90%);
+            margin: auto;
+            padding: 40px 0;
+        }
+
+        section {
+            margin-bottom: 80px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-inline: auto;
+        }
+
+        /* =========================
+           NAVBAR
+           ========================= */
+        .navbar-wrapper {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        /* =========================
+           HERO
+           ========================= */
+        .hero {
+            text-align: center;
+            padding: 100px 20px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent) 0%, rgba(255,248,244,0) 70%);
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .hero h1 {
+            max-width: 900px;
+            margin-bottom: 20px;
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: 0 auto 40px;
+            font-size: 1.2rem;
+        }
+
+        .hero .actions {
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .hero .btn {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+        }
+
+        /* =========================
+           CARDS & GRIDS
+           ========================= */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            display: inline-block;
+            background: var(--primary-light);
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            border-radius: 16px;
+        }
+
+        /* =========================
+           CUSTOM LISTS
+           ========================= */
+        .steps-list {
+            list-style: none;
+            counter-reset: steps;
+            display: grid;
+            gap: 16px;
+        }
+
+        .steps-list li {
+            position: relative;
+            padding: 20px 20px 20px 60px;
+            background: var(--bg);
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 1.1rem;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+        
+        .steps-list li:hover {
+            border-color: var(--primary);
+            background: var(--surface);
+        }
+
+        .steps-list li::before {
+            counter-increment: steps;
+            content: counter(steps);
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .threat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            list-style: none;
+        }
+
+        .threat-grid li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .threat-grid li span {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        /* =========================
+           FRAMEWORKS PILLS
+           ========================= */
+        .frameworks-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .framework-pill {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 99px;
+            font-weight: 600;
+            color: var(--text);
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .framework-pill:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           CTA SECTION
+           ========================= */
+        .cta-section {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--primary-light) 100%);
+            text-align: center;
+            padding: 60px 20px;
+            border: 2px solid var(--accent);
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        /* =========================
+           FOOTER
+           ========================= */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            margin-top: 40px;
+        }
+
+        /* =========================
+           RESPONSIVE
+           ========================= */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 16px;
+            }
+            .hero {
+                padding: 60px 15px 40px;
+            }
+            .card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <div class="navbar-wrapper">
+        <nav class="navbar public-navbar">
+            <div class="logo">
+                🛡 <span>Secrust</span>
+            </div>
+            <div class="actions">
+                <a href="/login"><button>Login</button></a>
+                <a href="/register"><button class="btn-primary">Get Started</button></a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ================= HERO ================= -->
+    <header class="hero">
+        <h1 class="gradient-text">Real-Time Website Security Monitoring</h1>
+        <h2>Detect attacks before they become security incidents</h2>
+        <p>
+            Monitor SQL Injection, Cross-Site Scripting (XSS), brute-force
+            attacks, scanners, suspicious requests and application logs
+            from one powerful dashboard.
+        </p>
+        <div class="actions">
+            <a href="/register"><button class="btn-primary">🚀 Start for Free</button></a>
+            <a href="/login"><button>View Demo</button></a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ================= FEATURES ================= -->
+        <section>
+            <div class="grid-4 stats">
+                <div class="card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-Time Monitoring</h3>
+                    <p>Receive live security events using WebSockets and instant updates as they happen.</p>
+                </div>
+                <div class="card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>GeoIP Tracking</h3>
+                    <p>Identify malicious visitors and attackers by country, city, and region accurately.</p>
+                </div>
+                <div class="card">
+                    <div class="feature-icon">🚨</div>
+                    <h3>Threat Detection</h3>
+                    <p>Automatically detect SQL Injection, XSS, scanners, and brute-force attacks instantly.</p>
+                </div>
+                <div class="card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>View detailed security logs, critical alerts, and visual threat statistics in one place.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= HOW IT WORKS & WHY CHOOSE US ================= -->
+        <section class="grid-2">
+            <div class="card">
+                <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+                    <h2>📋 How It Works</h2>
+                    <p>Get secured in less than 5 minutes.</p>
+                </div>
+                <ol class="steps-list">
+                    <li>Create a free Secrust account.</li>
+                    <li>Add your website domain.</li>
+                    <li>Generate your secure API key.</li>
+                    <li>Install the lightweight Secrust SDK.</li>
+                    <li>Start monitoring attacks instantly.</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+                    <h2>⭐ Why Choose Secrust?</h2>
+                    <p>Built for modern web applications.</p>
+                </div>
+                <ul class="threat-grid" style="grid-template-columns: 1fr;">
+                    <li><span>✔</span> Lightweight integration</li>
+                    <li><span>✔</span> Real-time interactive dashboards</li>
+                    <li><span>✔</span> Instant email & webhook alerts</li>
+                    <li><span>✔</span> Powerful, fast log search</li>
+                    <li><span>✔</span> API-first architecture</li>
+                    <li><span>✔</span> Zero-maintenance deployment</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ================= DETECTED THREATS ================= -->
+        <section class="card">
+            <div class="section-header">
+                <h2>🛡 Comprehensive Threat Detection</h2>
+                <p>We automatically identify and log common attack vectors.</p>
+            </div>
+            <ul class="threat-grid">
+                <li><span>✅</span> SQL Injection</li>
+                <li><span>✅</span> Cross-Site Scripting (XSS)</li>
+                <li><span>✅</span> Brute Force Attempts</li>
+                <li><span>✅</span> Directory Traversal</li>
+                <li><span>✅</span> Port Scanner Detection</li>
+                <li><span>✅</span> Suspicious User-Agents</li>
+                <li><span>✅</span> Rate Limiting Violations</li>
+                <li><span>✅</span> Malicious Bot Traffic</li>
+            </ul>
+        </section>
+
+        <!-- ================= SUPPORTED FRAMEWORKS ================= -->
+        <section class="card" style="background: transparent; border: none; box-shadow: none; text-align: center; padding-top: 0;">
+            <div class="section-header">
+                <h2>🧩 Supported Frameworks</h2>
+                <p>Seamlessly integrates with your favorite tech stack.</p>
+            </div>
+            <div class="frameworks-container">
+                <span class="framework-pill">Flask</span>
+                <span class="framework-pill">Django</span>
+                <span class="framework-pill">Laravel</span>
+                <span class="framework-pill">PHP</span>
+                <span class="framework-pill">Go</span>
+                <span class="framework-pill">Node.js</span>
+                <span class="framework-pill">Express</span>
+                <span class="framework-pill">React</span>
+                <span class="framework-pill">Next.js</span>
+                <span class="framework-pill">Vue</span>
+                <span class="framework-pill">Angular</span>
+                <span class="framework-pill">WordPress</span>
+                <span class="framework-pill">ASP.NET</span>
+            </div>
+        </section>
+
+        <!-- ================= CTA ================= -->
+        <section class="card cta-section">
+            <h2>Ready to Secure Your Website?</h2>
+            <p>Start monitoring attacks, logs, suspicious activity and security events today with zero upfront cost.</p>
+            <a href="/register">
+                <button class="btn-primary" style="padding: 18px 36px; font-size: 1.2rem;">
+                    🚀 Create Free Account
+                </button>
+            </a>
+        </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <p>
+            <strong>© 2026 Secrust</strong><br>
+            Real-Time Website Security Monitoring Platform
+        </p>
+    </footer>
+
+</body>
+</html>

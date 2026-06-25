@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>{{.domain}} - Secrust Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+
+<!-- Sidebar -->
+<aside class="sidebar">
+
+    <div class="logo">
+        🛡 Secrust
+    </div>
+
+    <div class="sidebar-menu">
+
+        <a href="/website/{{.hash}}/dashboard">
+             Dashboard
+        </a>
+
+        <a href="/website/{{.hash}}/logs">
+             Live Logs
+        </a>
+
+        <a href="/website/{{.hash}}/alerts">
+             Alerts
+        </a>
+
+        <a href="/website/{{.hash}}/logs/search">
+             Search Logs
+        </a>
+
+        <a href="/website/{{.hash}}/integration">
+            Integration
+        </a>
+
+        <a href="/websites">
+             Websites
+        </a>
+
+    </div>
+
+    <a href="/logout" class="logout-btn">
+         Logout
+    </a>
+
+</aside>
+
+<!-- Main Content -->
+<main class="content">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <div class="navbar-title">
+            🛡 Security Dashboard
+        </div>
+
+        <div class="navbar-right">
+
+            <!-- <input
+                type="text"
+                class="search-global"
+                placeholder="Search logs, IPs, paths..."> -->
+
+        </div>
+
+    </nav>
+
+    <!-- Header Card -->
+
+    <div class="card">
+
+        <h1>{{.domain}}</h1>
+
+        <p>
+            Real-time website security monitoring and threat analysis.
+        </p>
+
+    </div>
+
+    <br>
+
+    <!-- Stats -->
+
+    <div class="stats">
+
+        <div class="card">
+            <div class="stat-number">{{.logs}}</div>
+            <div class="stat-label">Total Logs</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-number">{{.alerts}}</div>
+            <div class="stat-label">Security Alerts</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-number">{{.ok200}}</div>
+            <div class="stat-label">200 OK</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-number">{{.err404}}</div>
+            <div class="stat-label">404 Errors</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-number">{{.err500}}</div>
+            <div class="stat-label">500 Errors</div>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="actions">
+
+        <a href="/website/{{.hash}}/logs">
+            <button> Logs</button>
+        </a>
+
+        <a href="/website/{{.hash}}/alerts">
+            <button> Alerts</button>
+        </a>
+
+        <a href="/website/{{.hash}}/logs/search">
+            <button> Search</button>
+        </a>
+
+        <a href="/website/{{.hash}}/export/logs">
+            <button> Export CSV</button>
+        </a>
+
+        <a href="/website/{{.hash}}/integration">
+            <button> Integration</button>
+        </a>
+
+    </div>
+
+    <!-- Live Feed -->
+
+    <div class="card">
+
+        <h2> Live Monitoring Feed</h2>
+
+        <br>
+
+        <div id="live-feed">
+
+            <p>Waiting for events...</p>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <!-- Recent Activity -->
+
+    <div class="card">
+
+        <h2> Recent Activity</h2>
+
+        <br>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <tr>
+                    <th>Time</th>
+                    <th>IP</th>
+                    <th>Path</th>
+                    <th>Status</th>
+                </tr>
+
+                {{range .recent}}
+
+                <tr>
+
+                    <td>{{.Time}}</td>
+                    <td>{{.IP}}</td>
+                    <td>{{.Path}}</td>
+
+                    <td>
+
+                        {{if eq .Status 200}}
+                        <span class="badge success">
+                            200
+                        </span>
+
+                        {{else if eq .Status 404}}
+                        <span class="badge warning">
+                            404
+                        </span>
+
+                        {{else}}
+                        <span class="badge danger">
+                            {{.Status}}
+                        </span>
+                        {{end}}
+
+                    </td>
+
+                </tr>
+
+                {{else}}
+
+                <tr>
+                    <td colspan="4">
+                        No Logs Available
+                    </td>
+                </tr>
+
+                {{end}}
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <!-- Bottom Grid -->
+
+    <div class="bottom-grid">
+
+        <!-- Top IPs -->
+
+        <div class="card">
+
+            <h2> Top IP Addresses</h2>
+
+            <br>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Requests</th>
+                    </tr>
+
+                    {{range .topips}}
+
+                    <tr>
+                        <td>{{.IP}}</td>
+                        <td>{{.Count}}</td>
+                    </tr>
+
+                    {{else}}
+
+                    <tr>
+                        <td colspan="2">
+                            No Data Available
+                        </td>
+                    </tr>
+
+                    {{end}}
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- Raw JSON Feed -->
+
+        <!-- <div class="card">
+
+            <h2>Raw JSON Events</h2>
+
+            <br>
+
+            <pre id="json-feed">
+
+
+Waiting for events... </pre>
+
+
+        </div> -->
+
+    </div>
+
+</main>
+
+
+</div>
+
+<script>
+
+const socket = new WebSocket(
+    "ws://localhost:8080/ws"
+);
+
+socket.onmessage = function(event){
+
+    try {
+
+        const log = JSON.parse(event.data);
+
+        const feed =
+            document.getElementById(
+                "live-feed"
+            );
+
+        const now =
+            new Date()
+            .toLocaleTimeString();
+
+        const item =
+            document.createElement("p");
+
+        if(log.status >= 500){
+
+            item.innerHTML =
+                `🔥 [${now}] ${log.ip} ${log.method} ${log.path}`;
+
+        }
+        else if(log.status == 404){
+
+            item.innerHTML =
+                `⚠️ [${now}] ${log.ip} ${log.method} ${log.path}`;
+
+        }
+        else{
+
+            item.innerHTML =
+                `✅ [${now}] ${log.ip} ${log.method} ${log.path}`;
+        }
+
+        feed.prepend(item);
+
+        if(feed.children.length > 50){
+
+            feed.removeChild(
+                feed.lastChild
+            );
+        }
+
+        const jsonFeed =
+            document.getElementById(
+                "json-feed"
+            );
+
+        const pretty =
+            JSON.stringify(
+                log,
+                null,
+                2
+            );
+
+        jsonFeed.innerHTML =
+            pretty +
+            "\n\n-----------------------------------\n\n" +
+            jsonFeed.innerHTML;
+
+    }
+    catch(err){
+
+        console.log(err);
+
+    }
+
+};
+
+</script>
+
+</body>
+</html>

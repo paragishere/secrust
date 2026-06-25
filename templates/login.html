@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Secrust</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================
+           VARIABLES & RESET
+           ========================= */
+        :root {
+            --bg: #fff8f4;
+            --surface: #ffffff;
+            --primary: #ff8f6b;
+            --primary-hover: #ff7b52;
+            --primary-light: #ffefe9;
+            --accent: #ffe4d6;
+            --text: #2d3748;
+            --text-muted: #718096;
+            --border: #f1d5c7;
+            --radius: 20px;
+            --shadow: 0 8px 30px rgba(0,0,0,0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--primary-hover);
+        }
+
+        /* =========================
+           TYPOGRAPHY
+           ========================= */
+        h1, h2 {
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: var(--text-muted);
+        }
+
+        /* =========================
+           LAYOUT & CARDS
+           ========================= */
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Subtle background decoration */
+        .auth-page::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent) 0%, rgba(255,248,244,0) 70%);
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+        }
+
+        .auth-header {
+            margin-bottom: 32px;
+        }
+
+        /* =========================
+           FORMS & INPUTS
+           ========================= */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: #a0aec0;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        /* =========================
+           BUTTONS
+           ========================= */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+            border-radius: 14px;
+            padding: 16px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 143, 107, 0.3);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 6px 20px rgba(255, 143, 107, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           UTILITIES
+           ========================= */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0 20px;
+            width: 100%;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-page">
+        <div class="card auth-card">
+            
+            <!-- Header -->
+            <div class="auth-header">
+                <h1>🛡 Secrust</h1>
+                <p>Security Monitoring Platform</p>
+            </div>
+
+            <!-- Title -->
+            <h2>Welcome Back</h2>
+            <p>Login to access your security dashboard.</p>
+
+            <!-- Form -->
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email"
+                        name="email" 
+                        placeholder="Enter your email" 
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password"
+                        name="password" 
+                        placeholder="Enter your password" 
+                        required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">
+                    Login
+                </button>
+            </form>
+
+            <!-- Register Link -->
+            <p>
+                Don't have an account? 
+                <a href="/register">Create Account</a>
+            </p>
+
+            <div class="divider"></div>
+
+            <!-- Back to Home -->
+            <a href="/" class="back-link">← Back to Home</a>
+
+        </div>
+    </div>
+
+</body>
+</html>
