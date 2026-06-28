@@ -139,15 +139,7 @@ Example JSON:
 
 ---
 
-## 📸 Screenshots
 
-Add screenshots of:
-
-* Login Page
-* Dashboard
-* Website Management
-* Logs
-* Alerts
 
 ---
 
