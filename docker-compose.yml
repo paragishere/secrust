@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  secrust:
+    build: .
+    container_name: secrust
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    volumes:
+      - ./secrust.db:/app/secrust.db  
