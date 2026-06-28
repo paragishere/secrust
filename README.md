@@ -170,9 +170,6 @@ Add screenshots of:
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License.
 
 ---
 
@@ -180,8 +177,8 @@ This project is licensed under the MIT License.
 
 **Parag Malvi**
 
-* GitHub: https://github.com/YOUR_USERNAME
-* LinkedIn: https://linkedin.com/in/YOUR_PROFILE
+* GitHub: https://github.com/paragishere
+* LinkedIn: https://www.linkedin.com/in/parag-malvi-b52330281/
 
 ---
 
