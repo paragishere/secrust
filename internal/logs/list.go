@@ -58,21 +58,21 @@ func ListLogs(c *gin.Context) {
 
 	rows, err := database.DB.Query(
 		`
-	SELECT
-		id,
-		ip,
-		method,
-		path,
-		status,
-		country,
-		city,
-		event_type,
-		severity,
-		created_at
-	FROM logs
-	WHERE website_id=?
-	ORDER BY id DESC
-	`,
+		SELECT
+			id,
+			ip,
+			method,
+			path,
+			status,
+			country,
+			city,
+			event_type,
+			severity,
+			created_at
+		FROM logs
+		WHERE website_id=?
+		ORDER BY id DESC
+		`,
 		websiteID,
 	)
 
@@ -120,6 +120,22 @@ func ListLogs(c *gin.Context) {
 			logs,
 			l,
 		)
+	}
+
+	// =========================
+	// Final Rows Error Check
+	// =========================
+
+	if err := rows.Err(); err != nil {
+
+		c.JSON(
+			500,
+			gin.H{
+				"error": err.Error(),
+			},
+		)
+
+		return
 	}
 
 	// =========================

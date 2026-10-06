@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Users - Secrust</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>👥 Organization Users</h1>
+
+    <p>
+        {{.organization}}
+    </p>
+
+    <br>
+
+    <div class="actions">
+
+        <a href="/users/add">
+            <button>
+                + Add User
+            </button>
+        </a>
+
+        <a href="/websites">
+            <button>
+                Websites
+            </button>
+        </a>
+
+        <a href="/logout">
+            <button>
+                Logout
+            </button>
+        </a>
+
+    </div>
+
+    <br>
+
+    <table>
+
+        <thead>
+
+        <tr>
+
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        {{range .users}}
+
+        <tr>
+
+            <td>
+                {{.ID}}
+            </td>
+
+            <td>
+                {{.Name}}
+            </td>
+
+            <td>
+                {{.Email}}
+            </td>
+
+            <td>
+                {{.Role}}
+            </td>
+
+            <td>
+                {{.Status}}
+            </td>
+
+        </tr>
+
+        {{else}}
+
+        <tr>
+
+            <td colspan="5">
+                No users found.
+            </td>
+
+        </tr>
+
+        {{end}}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+
+</html>

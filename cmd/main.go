@@ -15,6 +15,7 @@ import (
 	"secrust/internal/logs"
 	"secrust/internal/middleware"
 	"secrust/internal/realtime"
+	"secrust/internal/users"
 	"secrust/internal/website"
 )
 
@@ -30,6 +31,11 @@ func main() {
 	}
 
 	err = database.Migrate()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = database.MigrateUserManagement()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,15 +72,12 @@ func main() {
 	// Public Routes
 	// =========================
 
-	r.GET("/register", func(c *gin.Context) {
-		c.HTML(200, "register.html", nil)
-	})
-
 	r.GET("/login", func(c *gin.Context) {
 		c.HTML(200, "login.html", nil)
 	})
 
-	r.POST("/register", auth.Register)
+	r.GET("/setup", auth.SetupPage)
+	r.POST("/setup", auth.SetupOrganization)
 	r.POST("/login", auth.Login)
 
 	// API endpoint should remain public
@@ -89,6 +92,54 @@ func main() {
 		middleware.AuthRequired,
 	)
 
+	protected.GET(
+		"/users/invite",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.InviteUserPage,
+	)
+
+	protected.POST(
+		"/users/invite",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.InviteUserHandler,
+	)
+
+	// ==========================================
+	// User Management
+	// ==========================================
+
+	protected.GET(
+		"/users",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.ListUsersPage,
+	)
+
+	protected.GET(
+		"/users/add",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.AddUserPage,
+	)
+
+	protected.POST(
+		"/users/add",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.CreateUserHandler,
+	)
 	// Website Management
 
 	protected.GET(
@@ -221,4 +272,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }

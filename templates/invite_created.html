@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invitation Created | Secrust</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8f5;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            width: 520px;
+            background: white;
+            padding: 40px;
+
+            border-radius: 20px;
+            border: 1px solid #fed7cc;
+
+            box-shadow: 0 20px 50px rgba(255,120,80,.12);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+
+            border: 1px solid #ddd;
+            border-radius: 8px;
+
+            margin: 10px 0 15px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 9px;
+
+            background: #ff7657;
+            color: white;
+
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1>Invitation Created ✅</h1>
+
+    <p>
+        Invitation created for:
+        <strong>{{ .email }}</strong>
+    </p>
+
+    <p>
+        Role:
+        <strong>{{ .role }}</strong>
+    </p>
+
+    <p>
+        Share this invitation link with the user:
+    </p>
+
+    <input
+        id="inviteLink"
+        value="{{ .invite_url }}"
+        readonly
+    >
+
+    <button onclick="copyLink()">
+        Copy Invitation Link
+    </button>
+
+</div>
+
+<script>
+function copyLink() {
+
+    const input = document.getElementById("inviteLink");
+
+    navigator.clipboard.writeText(input.value);
+
+    alert("Invitation link copied!");
+}
+</script>
+
+</body>
+</html>
