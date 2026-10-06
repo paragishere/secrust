@@ -81,6 +81,12 @@ func ListWebsites(c *gin.Context) {
 			w,
 		)
 	}
+	if err := rows.Err(); err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	c.HTML(
 		200,

@@ -116,6 +116,10 @@ func ExportCSV(c *gin.Context) {
 
 	defer rows.Close()
 
+	// =========================
+	// Write CSV Rows
+	// =========================
+
 	for rows.Next() {
 
 		var id int
@@ -150,6 +154,23 @@ func ExportCSV(c *gin.Context) {
 			city,
 		})
 	}
+
+	// =========================
+	// Final Rows Error Check
+	// =========================
+
+	if err := rows.Err(); err != nil {
+
+		// CSV headers may already have been written,
+		// so don't attempt another JSON response.
+
+		writer.Flush()
+		return
+	}
+
+	// =========================
+	// Flush CSV
+	// =========================
 
 	writer.Flush()
 }
