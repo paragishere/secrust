@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Assign Websites | Secrust</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background: #fff8f5;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 800px;
+
+            margin: 60px auto;
+
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 20px;
+
+            border: 1px solid #fed7cc;
+
+            box-shadow:
+                0 20px 50px rgba(255,120,80,.10);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .user-info {
+            padding: 15px;
+
+            background: #fff1ec;
+
+            border-radius: 12px;
+
+            margin-bottom: 25px;
+        }
+
+        .website {
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            padding: 16px;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 12px;
+
+            margin-bottom: 10px;
+        }
+
+        .website:hover {
+            background: #f8fafc;
+        }
+
+        .website input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .domain {
+            font-weight: 600;
+        }
+
+        .hash {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        button {
+            margin-top: 20px;
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            background: #ff7657;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .empty {
+            padding: 20px;
+
+            background: #f8fafc;
+
+            border-radius: 12px;
+
+            color: #64748b;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Assign Websites</h1>
+
+        <div class="user-info">
+
+            <strong>{{ .name }}</strong>
+
+            <br>
+
+            {{ .email }}
+
+            <br>
+
+            <small>
+                Role: {{ .role }}
+            </small>
+
+        </div>
+
+        <form
+            action="/users/{{ .user_id }}/websites"
+            method="POST"
+        >
+
+            {{ if .websites }}
+
+                {{ range .websites }}
+
+                <label class="website">
+
+                    <input
+                        type="checkbox"
+                        name="website_ids"
+                        value="{{ .ID }}"
+                        {{ if index $.assigned .ID }}checked{{ end }}
+                    >
+
+                    <div>
+
+                        <div class="domain">
+                            {{ .Domain }}
+                        </div>
+
+                        <div class="hash">
+                            {{ .HashID }}
+                        </div>
+
+                    </div>
+
+                </label>
+
+                {{ end }}
+
+            {{ else }}
+
+                <div class="empty">
+                    No websites have been added to this organization yet.
+                </div>
+
+            {{ end }}
+
+            <button type="submit">
+                Save Website Assignments
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

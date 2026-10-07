@@ -1,265 +1,137 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <title>Secrust - My Websites</title>
-
-
-<link rel="stylesheet" href="/static/css/style.css">
-
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secrust - Websites</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
 
+<body>
 <div class="layout">
 
+    <aside class="sidebar">
+        <div class="logo">🛡 Secrust</div>
 
-<!-- Sidebar -->
-<!-- Sidebar -->
+        <div class="sidebar-menu">
+            {{ if or (eq .role "SUPER_ADMIN") (eq .role "MANAGER") }}
+            <a href="/admin/dashboard">📊 Organization Dashboard</a>
+            <a href="/users">👥 Team Members</a>
+            <a href="/users/invite">✉️ Invite User</a>
+            {{ end }}
 
-<aside class="sidebar">
+            <a href="/websites">🌐 Websites</a>
+        </div>
 
+        <a href="/logout" class="logout-btn">🚪 Logout</a>
+    </aside>
 
-<div class="logo">
-    🛡 Secrust
-</div>
+    <main class="content">
 
-<div class="sidebar-menu">
+        <nav class="navbar">
+            <div class="navbar-title">Website Management</div>
 
-    <a href="/websites">
-         My Websites
-    </a>
+            {{ if or (eq .role "SUPER_ADMIN") (eq .role "MANAGER") }}
+            <div class="navbar-right">
+                <a href="/website/add">
+                    <button class="btn-primary">+ Add Website</button>
+                </a>
+            </div>
+            {{ end }}
+        </nav>
 
-    <a href="/website/add">
-        Add Website
-    </a>
-
-</div>
-
-<a href="/logout" class="logout-btn">
-     Logout
-</a>
-
-
-</aside>
-
-
-<!-- Main Content -->
-
-<main class="content">
-
-    <!-- Navbar -->
-
-    <!-- Navbar -->
-
-<nav class="navbar">
-
-
-<div class="navbar-title">
-     Website Management
-</div>
-
-<div class="navbar-right">
-    
-
-    <a href="/website/add">
-
-        <button class="btn-primary">
-             Add Website
-        </button>
-
-    </a>
-
-</div>
-
-
-</nav>
-
-    <!-- Header -->
-
-    <div class="card">
-
-        <h1>🛡 My Websites</h1>
-
-        <p>
-            Manage websites, integrations, API keys and monitoring dashboards.
-        </p>
-
-    </div>
-
-    <br>
-
-    <!-- Website List -->
-
-    <div class="card">
-
-        <h2> Connected Websites</h2>
+        <div class="card">
+            <h1>🌐 My Websites</h1>
+            <p>
+                {{ if or (eq .role "SUPER_ADMIN") (eq .role "MANAGER") }}
+                Manage your organization's websites, integrations and monitoring.
+                {{ else }}
+                Monitor the websites assigned to you.
+                {{ end }}
+            </p>
+        </div>
 
         <br>
 
-        <div class="table-wrapper">
+        <div class="card">
+            <h2>Connected Websites</h2>
+            <br>
 
-            <table>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Hash ID</th>
+                        <th>Dashboard</th>
+                        {{ if or (eq .role "SUPER_ADMIN") (eq .role "MANAGER") }}
+                        <th>Management</th>
+                        {{ end }}
+                    </tr>
+                    </thead>
 
-                <tr>
+                    <tbody>
+                    {{ range .websites }}
+                    <tr>
+                        <td><strong>{{ .Domain }}</strong></td>
 
-                    <th>Domain</th>
-                    <th>Hash ID</th>
-                    <th>API Key</th>
-                    <th>Dashboard</th>
-                    <th>Management</th>
+                        <td>
+                            <code>{{ .HashID }}</code>
+                        </td>
 
-                </tr>
-
-                {{range .websites}}
-
-                <tr>
-
-                    <td>
-
-                        <strong>
-                            {{.Domain}}
-                        </strong>
-
-                    </td>
-
-                    <td>
-
-                        <code>
-                            {{.HashID}}
-                        </code>
-
-                    </td>
-
-                    <td>
-
-                        <code>
-                            {{.APIKey}}
-                        </code>
-
-                    </td>
-
-                    <td>
-
-                        <div class="actions">
-
-                            <a href="/website/{{.HashID}}/dashboard">
-                                <button>
-                                     Dashboard
-                                </button>
+                        <td>
+                            <a href="/website/{{ .HashID }}/dashboard">
+                                <button>Dashboard</button>
                             </a>
+                        </td>
 
-                            <!-- <a href="/website/{{.HashID}}/logs">
-                                <button>
-                                    📜 Logs
-                                </button>
-                            </a>
+                        {{ if or (eq $.role "SUPER_ADMIN") (eq $.role "MANAGER") }}
+                        <td>
+                            <div class="actions">
+                                <a href="/website/{{ .HashID }}/integration">
+                                    <button>Integration</button>
+                                </a>
 
-                            <a href="/website/{{.HashID}}/alerts">
-                                <button>
-                                    🚨 Alerts
-                                </button>
-                            </a>
+                                <form action="/website/{{ .HashID }}/apikey" method="POST"
+                                      onsubmit="return confirm('Generate a new API key? Old integrations will stop working.');">
+                                    <button type="submit">Regenerate Key</button>
+                                </form>
 
-                            <a href="/website/{{.HashID}}/integration">
-                                <button>
-                                    🔌 Integration
-                                </button>
-                            </a> -->
+                                <form action="/website/{{ .HashID }}/delete" method="POST"
+                                      onsubmit="return confirm('Delete this website and all logs?');">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                        {{ end }}
+                    </tr>
 
-                        </div>
+                    {{ else }}
+                    <tr>
+                        <td colspan="4">
+                            <div style="text-align:center;padding:40px;">
+                                <h3>No Websites Available</h3>
+                                <br>
 
-                    </td>
-
-                    <td>
-
-                        <form
-                            action="/website/{{.HashID}}/apikey"
-                            method="POST"
-                            onsubmit="return confirm('Generate a new API key? Old integrations will stop working.')">
-
-                            <button
-                                type="submit">
-
-                                 Regenerate Key
-
-                            </button>
-
-                        </form>
-
-                        <br>
-
-                        <form
-                            action="/website/{{.HashID}}/delete"
-                            method="POST"
-                            onsubmit="return confirm('Delete this website and all logs?')">
-
-                            <button
-                                type="submit">
-
-                                Delete
-
-                            </button>
-
-                        </form>
-
-                    </td>
-
-                </tr>
-
-                {{else}}
-
-                <tr>
-
-                    <td colspan="5">
-
-                        <div
-                            style="
-                                text-align:center;
-                                padding:40px;
-                            ">
-
-                            <h3>
-                                No Websites Added
-                            </h3>
-
-                            <br>
-
-                            <p>
-                                Add your first website to start monitoring logs and attacks.
-                            </p>
-
-                            <br>
-
-                            <a href="/website/add">
-
-                                <button
-                                    class="btn-primary">
-
-                                    Add Website
-
-                                </button>
-
-                            </a>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-                {{end}}
-
-            </table>
-
+                                {{ if or (eq $.role "SUPER_ADMIN") (eq $.role "MANAGER") }}
+                                <p>Add your first website to start monitoring.</p>
+                                <br>
+                                <a href="/website/add">
+                                    <button class="btn-primary">Add Website</button>
+                                </a>
+                                {{ else }}
+                                <p>No websites have been assigned to your account yet.</p>
+                                {{ end }}
+                            </div>
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-    </div>
-
-</main>
-
-
+    </main>
 </div>
-
 </body>
 </html>

@@ -83,6 +83,16 @@ func main() {
 	// API endpoint should remain public
 	r.POST("/api/logs", logs.Ingest)
 
+	r.GET(
+		"/invite/:token",
+		users.AcceptInvitePage,
+	)
+
+	r.POST(
+		"/invite/:token",
+		users.AcceptInviteHandler,
+	)
+
 	// =========================
 	// Protected Routes
 	// =========================
@@ -108,6 +118,56 @@ func main() {
 			"MANAGER",
 		),
 		users.InviteUserHandler,
+	)
+	protected.POST(
+		"/users/invitations/:id/revoke",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.RevokeInvitation,
+	)
+
+	protected.POST(
+		"/users/invitations/:id/resend",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.ResendInvitation,
+	)
+	protected.GET(
+		"/users/:id/websites",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.AssignWebsitesPage,
+	)
+
+	protected.POST(
+		"/users/:id/websites",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		users.AssignWebsitesHandler,
+	)
+
+	protected.GET(
+		"/admin/dashboard",
+		middleware.RequireRole(
+			"SUPER_ADMIN",
+			"MANAGER",
+		),
+		func(c *gin.Context) {
+
+			c.HTML(
+				http.StatusOK,
+				"admin_dashboard.html",
+				nil,
+			)
+		},
 	)
 
 	// ==========================================

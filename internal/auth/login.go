@@ -191,8 +191,20 @@ func Login(c *gin.Context) {
 	// Redirect
 	// =========================
 
-	c.Redirect(
-		http.StatusFound,
-		"/websites",
-	)
+	// c.Redirect(
+	// 	http.StatusFound,
+	// 	"/websites",
+	// )
+
+	switch role {
+
+	case "SUPER_ADMIN", "MANAGER":
+		c.Redirect(http.StatusFound, "/admin/dashboard")
+
+	case "ANALYST", "VIEWER":
+		c.Redirect(http.StatusFound, "/websites")
+
+	default:
+		c.Redirect(http.StatusFound, "/websites")
+	}
 }

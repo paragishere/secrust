@@ -1,122 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Users - Secrust</title>
-
-    <link
-        rel="stylesheet"
-        href="/static/css/style.css"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Members - Secrust</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .page-header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            margin-bottom:24px;
+            flex-wrap:wrap;
+        }
+        .btn-link {
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding:10px 16px;
+            border-radius:10px;
+            text-decoration:none;
+            font-weight:600;
+            background:#ff8f6b;
+            color:#fff;
+        }
+        .btn-link.secondary {
+            background:#fff;
+            color:#334155;
+            border:1px solid #e2e8f0;
+        }
+        .actions-inline {
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+        .actions-inline form { margin:0; }
+        .actions-inline button {
+            padding:8px 12px;
+            border:1px solid #e2e8f0;
+            border-radius:8px;
+            background:#fff;
+            cursor:pointer;
+        }
+        .role-badge, .status-badge {
+            display:inline-block;
+            padding:4px 9px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:700;
+        }
+        .role-badge { background:#fff1ec; color:#c2410c; }
+        .status-badge { background:#ecfdf5; color:#047857; }
+        .pending-badge { background:#fff7ed; color:#c2410c; }
+        .empty-state {
+            padding:24px;
+            text-align:center;
+            color:#64748b;
+        }
+        .section-card { margin-top:24px; }
+    </style>
 </head>
 
 <body>
+<div class="layout">
 
-<div class="container">
+    <aside class="sidebar">
+        <div class="logo">🛡 Secrust</div>
 
-    <h1>👥 Organization Users</h1>
+        <div class="sidebar-menu">
+            <a href="/admin/dashboard">📊 Organization Dashboard</a>
+            <a href="/users">👥 Team Members</a>
+            <a href="/websites">🌐 Websites</a>
+            <a href="/users/invite">✉️ Invite User</a>
+        </div>
 
-    <p>
-        {{.organization}}
-    </p>
+        <a href="/logout" class="logout-btn">🚪 Logout</a>
+    </aside>
 
-    <br>
+    <main class="content">
 
-    <div class="actions">
+        <nav class="navbar">
+            <div class="navbar-title">Team Management</div>
+        </nav>
 
-        <a href="/users/add">
-            <button>
-                + Add User
-            </button>
-        </a>
+        <div class="card">
+            <div class="page-header">
+                <div>
+                    <h1>👥 Team Members</h1>
+                    <p>{{ .organization }}</p>
+                </div>
 
-        <a href="/websites">
-            <button>
-                Websites
-            </button>
-        </a>
+                <a href="/users/invite" class="btn-link">
+                    + Invite User
+                </a>
+            </div>
 
-        <a href="/logout">
-            <button>
-                Logout
-            </button>
-        </a>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Website Access</th>
+                    </tr>
+                    </thead>
 
-    </div>
+                    <tbody>
+                    {{ range .users }}
+                    <tr>
+                        <td>{{ .ID }}</td>
+                        <td><strong>{{ .Name }}</strong></td>
+                        <td>{{ .Email }}</td>
+                        <td>
+                            <span class="role-badge">{{ .Role }}</span>
+                        </td>
+                        <td>
+                            <span class="status-badge">{{ .Status }}</span>
+                        </td>
+                        <td>
+                            {{ if ne .Role "SUPER_ADMIN" }}
+                            <a href="/users/{{ .ID }}/websites" class="btn-link secondary">
+                                Assign Websites
+                            </a>
+                            {{ else }}
+                            <span>Organization-wide</span>
+                            {{ end }}
+                        </td>
+                    </tr>
+                    {{ else }}
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            No users found.
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <br>
+        <div class="card section-card">
+            <div class="page-header">
+                <div>
+                    <h2>Pending Invitations</h2>
+                    <p>Invitations that have not been accepted yet.</p>
+                </div>
+            </div>
 
-    <table>
+            {{ if .invitations }}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Expires</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
 
-        <thead>
+                    <tbody>
+                    {{ range .invitations }}
+                    <tr>
+                        <td>{{ .Email }}</td>
+                        <td><span class="role-badge">{{ .Role }}</span></td>
+                        <td>{{ .ExpiresAt }}</td>
+                        <td><span class="pending-badge">Pending</span></td>
+                        <td>
+                            <div class="actions-inline">
+                                <form action="/users/invitations/{{ .ID }}/resend" method="POST">
+                                    <button type="submit">Resend</button>
+                                </form>
 
-        <tr>
+                                <form action="/users/invitations/{{ .ID }}/revoke" method="POST"
+                                      onsubmit="return confirm('Revoke this invitation?');">
+                                    <button type="submit">Revoke</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+            {{ else }}
+            <div class="empty-state">No pending invitations.</div>
+            {{ end }}
+        </div>
 
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-
-        </tr>
-
-        </thead>
-
-        <tbody>
-
-        {{range .users}}
-
-        <tr>
-
-            <td>
-                {{.ID}}
-            </td>
-
-            <td>
-                {{.Name}}
-            </td>
-
-            <td>
-                {{.Email}}
-            </td>
-
-            <td>
-                {{.Role}}
-            </td>
-
-            <td>
-                {{.Status}}
-            </td>
-
-        </tr>
-
-        {{else}}
-
-        <tr>
-
-            <td colspan="5">
-                No users found.
-            </td>
-
-        </tr>
-
-        {{end}}
-
-        </tbody>
-
-    </table>
-
+    </main>
 </div>
-
 </body>
-
 </html>
